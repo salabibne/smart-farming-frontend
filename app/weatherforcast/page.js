@@ -11,6 +11,7 @@ import haze from "../../public/weatherForcastImages/haze.png";
 import rain from "../../public/weatherForcastImages/rain.jpg";
 import snow from "../../public/weatherForcastImages/snow.jpg";
 import thunderstrom from "../../public/weatherForcastImages/thunderstrom.jpg";
+import Button from "daisyui/components/button";
 
 // Get Data Daily
 async function getWeatherDataDaily(lat = "23.8041", lon = "90.4152") {
@@ -25,6 +26,20 @@ async function getWeatherDataDaily(lat = "23.8041", lon = "90.4152") {
 
   return res.json();
 }
+
+// Get monthly data
+
+async function getWeatherDataAdvance(lat = "23.8041", lon = "90.4152") {
+  let baseURL = api.defaults.baseURL;
+  const res = await fetch(`${baseURL}/weather/forecast?lat=${lat}&lon=${lon}`, {
+    cache: "no-store",
+  });
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
+  }
+  return res.json();
+}
+
 
 // Time Formatter
 const timeFormatter = async (unixTime) => {
@@ -78,7 +93,7 @@ const getWeatherImageFormatter = (mainCondition) => {
   return conditionMap[mainCondition] || cloudy;
 };
 
-// 🛠 PROPER NOTIFICATION FORMATTER
+//  NOTIFICATION FORMATTER
 const notifactionFormatter = (mainCondition) => {
   const conditionMapForNotification = {
     Clear: {
@@ -146,16 +161,58 @@ const notifactionFormatter = (mainCondition) => {
   return conditionMapForNotification[mainCondition] || null;
 };
 
+  const fiveDaysForecast = [];
+  const today = new Date().toISOString().split("T")[0];
+
+  const advanceDayDataFormatter = async (weatherData) => {
+    weatherData.forEach((item) => {
+      const date = item.dt_txt.split(" ")[0]; // take only date part
+
+      // Skip today
+      if (date === today) return;
+
+      // If this date is NOT already used, push it (only once)
+      if (!fiveDaysForecast.some((day) => day.date === date)) {
+        fiveDaysForecast.push({
+          date,
+          temp: item.main.temp,
+          condition: item.weather[0].main,
+          description: item.weather[0].description,
+        });
+      }
+    });
+   
+  };
+
+  // Day Formetter
+  const dayFormatter = async (date_data) => {
+    const date = new Date(date_data);
+
+    const dayName = date.toLocaleDateString("en-US", { weekday: "short" });
+    return dayName 
+  }
+
 const WeatherPage = async () => {
-  // Get weather data from the API
+  // Get weather data from the function precise version 
   let weatherData = await getWeatherDataDaily();
+  let weatherDataAdvance = await getWeatherDataAdvance();
+  // Formatters Daily 
   let timeFormat = await timeFormatter(weatherData?.dt);
   let dateFormat = await dateFormatter(weatherData?.dt);
   let windDataFormat = await windSpeedFormatter(weatherData?.wind?.speed, weatherData?.wind?.deg);
   let placeFormat = await placeFormatter(weatherData?.name, weatherData?.sys?.country);
   let weatherFormat = weatherData?.weather[0]?.main;
   let weatherImage = getWeatherImageFormatter(weatherFormat);
+ 
   let notificationMessage = notifactionFormatter(weatherFormat);
+
+  // Formatters Advance
+  let advanceDayData = await advanceDayDataFormatter(weatherDataAdvance?.list);
+
+  // Now print 5 days ONLY
+  
+
+
 
   // 🟢 TAILWIND COLOR MAP (SAFE CLASS)
   const colorMap = {
@@ -164,6 +221,15 @@ const WeatherPage = async () => {
     orange: "text-orange-700",
     red: "text-red-700",
   };
+
+    const bgMap = {
+      green: "bg-green-700",
+      yellow: "bg-yellow-700",
+      orange: "bg-orange-700",
+      red: "bg-red-700",
+    };
+
+ 
 
   return (
     <div>
@@ -223,12 +289,45 @@ const WeatherPage = async () => {
         <p className="text-4xl font-bold">
           Possible next 5 days weather information
         </p>
-        <div className="flex flex-row gap-8 mt-6">
-          <p>testing</p>
-          <p>testing</p>
-          <p>testing</p>
-          <p>testing</p>
-          <p>testing</p>
+        <div className="grid grid-cols-5 gap-8 mt-8">
+          {/* weather card */}
+          {fiveDaysForecast.map(
+            (item, index) => (
+              console.log("five", item),
+              (
+                <div
+                  key={index}
+                  className="border-2 border-[#6BBF59] rounded-lg p-4 mb-12"
+                >
+                  <div className="flex flex-col items-center justify-center p-4 gap-y-2">
+                    <p className="text-[24px]">{dayFormatter(item?.date)}</p>
+
+                    <Image
+                      src={getWeatherImageFormatter(item?.condition)}
+                      alt="img"
+                      width={60}
+                      height={60}
+                      className="rounded-lg"
+                    />
+                    <p className="text-[36px]">{item?.temp}&deg; C</p>
+                    <p>weather type : {item?.condition}</p>
+                    <p>
+                      Action :{" "}
+                      <span
+                        className={`border px-1.5 py-[3px]  rounded-sm text-white ${
+                         bgMap[notifactionFormatter(item?.condition).color] ||
+                          "bg-gray-500"
+                        }`}
+                      >
+                        {notifactionFormatter(item?.condition).action ||
+                          "normal"}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              )
+            )
+          )}
         </div>
       </div>
     </div>
