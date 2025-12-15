@@ -68,7 +68,7 @@ export default function AdminLayout({ children }) {
             </li>
             <li>
               <Link
-                href="/admin/manage-inventory"
+                href="/farmerPanel/manage-inventory"
                 className="block px-6 py-3 text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors"
               >
                 Manage Inventory
