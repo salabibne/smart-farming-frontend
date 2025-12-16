@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 // import axios from "axios"; // TODO: Uncomment when API is ready
 import api from "@/app/lib/axios";
 export default function TransactionList() {
+  const router = useRouter();
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(false); // Set true when API is ready
   const [error, setError] = useState(null);
@@ -69,7 +71,11 @@ const baseUrl = api.defaults.baseURL
               </tr>
             ) : (
               transactions.map((tx) => (
-                <tr key={tx.id}>
+                <tr 
+                  key={tx.id} 
+                  className="hover:bg-base-300 cursor-pointer transition-colors"
+                  onClick={() => router.push(`/inventory-transaction/${tx.inventoryId}`)}
+                >
                   <td>{new Date(tx.transactionDate).toLocaleString()}</td>
                   <td className="font-medium">{tx.inventory?.name || "Unknown Item"}</td>
                   <td>
