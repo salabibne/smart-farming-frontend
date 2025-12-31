@@ -30,7 +30,7 @@ export default function DashboardLayout({ children }) {
             </li>
             <li>
               <Link
-                href="/admin/crops-health"
+                href="/farmerPanel/crop-health"
                 className="block px-6 py-3 text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors"
               >
                 Crops Health
@@ -62,7 +62,7 @@ export default function DashboardLayout({ children }) {
             </li>
             <li>
               <Link
-                href="/admin/manage-finance"
+                href="/farmerPanel/finance"
                 className="block px-6 py-3 text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors"
               >
                 Manage Finance
