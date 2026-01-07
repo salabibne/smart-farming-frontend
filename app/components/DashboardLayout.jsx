@@ -46,7 +46,7 @@ export default function DashboardLayout({ children }) {
             </li>
             <li>
               <Link
-                href="/admin/market-information"
+                href="/farmerPanel/market-information"
                 className="block px-6 py-3 text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors"
               >
                 Market Information
