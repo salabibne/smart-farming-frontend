@@ -22,10 +22,10 @@ export default function DashboardLayout({ children }) {
             </li>
             <li>
               <Link
-                href="/admin/yield-management"
+                href="/farmerPanel/yield-management"
                 className="block px-6 py-3 text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors"
               >
-                Yiled Management
+                Yield Management
               </Link>
             </li>
             <li>
