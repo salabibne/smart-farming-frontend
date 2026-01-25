@@ -1,8 +1,23 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export default function DashboardLayout({ children }) {
+  const pathname = usePathname();
+
+  const navItems = [
+    { name: "Dashboard", href: "/farmer" },
+    { name: "Yield Management", href: "/farmerPanel/yield-management" },
+    { name: "Crops Health", href: "/farmerPanel/crop-health" },
+    { name: "Weather Information", href: "/admin/weather-information" },
+    { name: "Market Information", href: "/farmerPanel/market-information" },
+    { name: "Price Prediction", href: "/admin/price-prediction" },
+    { name: "Manage Finance", href: "/farmerPanel/finance" },
+    { name: "Manage Inventory", href: "/farmerPanel/manage-inventory" },
+    { name: "Back to Home", href: "/" },
+  ];
+
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
@@ -12,78 +27,23 @@ export default function DashboardLayout({ children }) {
         </div>
         <nav className="mt-6">
           <ul>
-            <li>
-              <Link
-                href="/farmer"
-                className="block px-6 py-3 text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors"
-              >
-                Dashboard
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/farmerPanel/yield-management"
-                className="block px-6 py-3 text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors"
-              >
-                Yield Management
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/farmerPanel/crop-health"
-                className="block px-6 py-3 text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors"
-              >
-                Crops Health
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/admin/weather-information"
-                className="block px-6 py-3 text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors"
-              >
-                Weather Information
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/farmerPanel/market-information"
-                className="block px-6 py-3 text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors"
-              >
-                Market Information
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/admin/price-prediction"
-                className="block px-6 py-3 text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors"
-              >
-                Price Prediction
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/farmerPanel/finance"
-                className="block px-6 py-3 text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors"
-              >
-                Manage Finance
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/farmerPanel/manage-inventory"
-                className="block px-6 py-3 text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors"
-              >
-                Manage Inventory
-              </Link>
-            </li>
-             <li>
-              <Link
-                href="/"
-                className="block px-6 py-3 text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors"
-              >
-                Back to Home
-              </Link>
-            </li>
+            {navItems.map((item) => {
+              const isActive = pathname === item.href;
+              return (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className={`block px-6 py-3 transition-colors ${
+                      isActive
+                        ? "bg-green-100 text-green-700 font-semibold border-r-4 border-green-600"
+                        : "text-gray-700 hover:bg-green-50 hover:text-green-600"
+                    }`}
+                  >
+                    {item.name}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         </nav>
       </aside>
