@@ -22,4 +22,9 @@ export const financeService = {
   getTransactionsByCategory: async (category) => {
     return await api.get(`${BASE_URL}/category/${category}`);
   },
+
+  // Get dashboard KPI data
+  getDashboardKPI: async (params = {}) => {
+    return await api.get(`${BASE_URL}/dashboard/kpi`, { params });
+  },
 };
