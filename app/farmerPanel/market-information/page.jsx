@@ -13,6 +13,7 @@ export default function MarketInformationPage() {
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isScraping, setIsScraping] = useState(false);
+  const [showNotification, setShowNotification] = useState(false);
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -76,6 +77,14 @@ export default function MarketInformationPage() {
         id: product.id
       });
       alert("Scraping initiated successfully! Data will be updated shortly.");
+      
+      // Notify after 5 seconds
+      setTimeout(() => {
+        setShowNotification(true);
+        // Hide notification after 4 seconds
+        setTimeout(() => setShowNotification(false), 4000);
+      }, 9000);
+
       // Optional: re-fetch after a delay or optimistically? 
       // User didn't specify auto-refresh, but good UX would be to wait a bit and refresh.
       setTimeout(fetchMarketData, 2000); 
@@ -148,6 +157,18 @@ export default function MarketInformationPage() {
           onClose={() => setIsModalOpen(false)} 
           onSuccess={handleProductAdded} 
         />
+      )}
+
+      {/* Success Notification Toast */}
+      {showNotification && (
+        <div className="toast toast-end toast-bottom z-[100]">
+          <div className="alert alert-success shadow-lg text-white">
+            <div className="flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              <span>Data Scraping has been successful!</span>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
