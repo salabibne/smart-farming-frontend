@@ -1,5 +1,7 @@
 
 import Image from "next/image";
+import mission from "@/public/aboutImages/mission.png"
+import evaluation from "@/public/aboutImages/evaluation.png"
 
 export default function AboutPage() {
   return (
@@ -31,7 +33,7 @@ export default function AboutPage() {
             </div>
             <div className="relative h-64 w-full rounded-xl overflow-hidden shadow-xl">
                <div className="w-full h-full bg-green-200 flex items-center justify-center text-green-800 font-bold text-xl">
-                  Mission Image Placeholder
+                  <Image src ={mission} alt ="mission"></Image>
                </div>
             </div>
           </div>
@@ -44,8 +46,8 @@ export default function AboutPage() {
           <h2 className="text-4xl font-bold text-center mb-12 text-green-900">Our History</h2>
           <div className="flex flex-col md:flex-row gap-8">
             <div className="md:w-1/2">
-               <div className="w-full h-80 bg-sepia-200 bg-[#e8dcc6] flex items-center justify-center text-amber-900 font-bold text-xl rounded-xl shadow-lg">
-                  History Image Placeholder
+               <div className="w-[70%] h-80 bg-sepia-200 bg-[#e8dcc6] flex items-center justify-center text-amber-900 font-bold text-xl rounded-xl shadow-lg">
+                  <Image src={evaluation} alt ="evaluation" ></Image>
                </div>
             </div>
             <div className="md:w-1/2 flex flex-col justify-center">

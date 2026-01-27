@@ -73,7 +73,7 @@ export default function YieldManagement() {
       const boundaryFormData = new FormData();
       boundaryFormData.append("file", file);
 
-      const response = await axios.post('http://localhost:8000/field-boundary', boundaryFormData, {
+      const response = await axios.post('http://localhost:8002/field-boundary', boundaryFormData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -94,7 +94,7 @@ export default function YieldManagement() {
       const errorMsg = error.response?.data?.detail || error.message;
       setMessage({ 
         type: 'error', 
-        text: `Analysis failed: ${errorMsg}. Is the backend running on port 8000?` 
+        text: `Analysis failed: ${errorMsg}. Is the backend running on port 8002?` 
       });
     } finally {
       setAnalyzing(false);

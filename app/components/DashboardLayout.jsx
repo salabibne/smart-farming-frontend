@@ -10,7 +10,7 @@ export default function DashboardLayout({ children }) {
     { name: "Dashboard", href: "/farmer" },
     { name: "Yield Management", href: "/farmerPanel/yield-management" },
     { name: "Crops Health", href: "/farmerPanel/crop-health" },
-    { name: "Weather Information", href: "/admin/weather-information" },
+    { name: "Weather Information", href: "/farmerPanel/weather-information" },
     { name: "Market Information", href: "/farmerPanel/market-information" },
     { name: "Price Prediction", href: "/admin/price-prediction" },
     { name: "Manage Finance", href: "/farmerPanel/finance" },
