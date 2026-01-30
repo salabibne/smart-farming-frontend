@@ -1,5 +1,6 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import api from '../../lib/axios';
 import axios from 'axios';
 import { 
   CloudArrowUpIcon, 
@@ -15,11 +16,11 @@ import {
   CalendarIcon,
   ClockIcon,
   InboxStackIcon,
-  ListBulletIcon
+  ListBulletIcon,
+  ArrowRightIcon
 } from '@heroicons/react/24/outline';
 
-export default function YieldManagement() {
-  const [formData, setFormData] = useState({
+const initialFormData = {
     name: '',
     location: '',
     size_Square_Meter: '',
@@ -30,7 +31,10 @@ export default function YieldManagement() {
     temperature: '',
     humidity: '',
     rainfall: ''
-  });
+  };
+
+export default function YieldManagement() {
+  const [formData, setFormData] = useState(initialFormData);
   const [recommendations, setRecommendations] = useState(null);
   const [loadingRecommendation, setLoadingRecommendation] = useState(false);
   const [imageFile, setImageFile] = useState(null);
@@ -45,6 +49,25 @@ export default function YieldManagement() {
   const [fertilizerPlan, setFertilizerPlan] = useState(null);
   const [loadingFertilizerPlan, setLoadingFertilizerPlan] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
+  const [fields, setFields] = useState([]);
+  const [loadingFields, setLoadingFields] = useState(false);
+
+  // Fetch registered fields
+  const fetchFields = async () => {
+    setLoadingFields(true);
+    try {
+      const response = await api.get('/field');
+      setFields(response.data.data);
+    } catch (error) {
+      console.error("Failed to fetch fields:", error);
+    } finally {
+      setLoadingFields(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchFields();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -73,9 +96,11 @@ export default function YieldManagement() {
       const boundaryFormData = new FormData();
       boundaryFormData.append("file", file);
 
+      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
       const response = await axios.post('http://localhost:8002/field-boundary', boundaryFormData, {
         headers: {
           'Content-Type': 'multipart/form-data',
+          'Authorization': token ? `Bearer ${token}` : '',
         },
       });
 
@@ -130,13 +155,12 @@ export default function YieldManagement() {
         pH: parseFloat(formData.pH)
       };
 
-      await axios.post('http://localhost:3000/field', payload);
+      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+      await api.post('/field', payload);
 
       setMessage({ type: 'success', text: "Field added successfully!" });
-      setFormData({
-        name: '', location: '', size_Square_Meter: '',
-        N: '', P: '', K: '', pH: ''
-      });
+      setFormData(initialFormData);
+      fetchFields(); // Refresh the list
       setImageFile(null);
       setPreviewUrl(null);
       setProcessedData(null);
@@ -172,7 +196,12 @@ export default function YieldManagement() {
         parseFloat(formData.rainfall)
       ];
 
-      const response = await axios.post('http://localhost:8006/predict', payload);
+      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+      const response = await axios.post('http://localhost:8006/predict', payload, {
+        headers: {
+          'Authorization': token ? `Bearer ${token}` : '',
+        },
+      });
       setRecommendations(response.data.top_3_recommendations);
       
     } catch (error) {
@@ -198,7 +227,12 @@ export default function YieldManagement() {
         crop_name: selectedCrop
       };
 
-      const response = await axios.post('http://127.0.0.1:8007/api/seed-planner', payload);
+      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+      const response = await axios.post('http://127.0.0.1:8007/api/seed-planner', payload, {
+        headers: {
+          'Authorization': token ? `Bearer ${token}` : '',
+        },
+      });
       setSeedPlan(response.data);
     } catch (error) {
       console.error("Seed planning failed:", error);
@@ -234,7 +268,12 @@ export default function YieldManagement() {
       if (payload.soil_inputs.P === undefined) delete payload.soil_inputs.P;
       if (payload.soil_inputs.K === undefined) delete payload.soil_inputs.K;
 
-      const response = await axios.post('http://localhost:8008/fertilizer/by-crop', payload);
+      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+      const response = await axios.post('http://localhost:8008/fertilizer/by-crop', payload, {
+        headers: {
+          'Authorization': token ? `Bearer ${token}` : '',
+        },
+      });
       setFertilizerPlan(response.data);
     } catch (error) {
       console.error("Fertilizer planning failed:", error);
@@ -291,8 +330,8 @@ export default function YieldManagement() {
                 >
                   <step.icon className="w-5 h-5"/>
                 </div>
-                <span className={`text-[10px] font-bold uppercase tracking-wider transition-colors duration-300
-                  ${currentStep >= step.id ? 'text-green-700' : 'text-gray-400'}`}>
+                <span className={"text-[10px] font-bold uppercase tracking-wider transition-colors duration-300 " + 
+                  (currentStep >= step.id ? 'text-green-700' : 'text-gray-400')}>
                   {step.label}
                 </span>
                 {currentStep > step.id && (
@@ -303,6 +342,107 @@ export default function YieldManagement() {
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Registered Fields Section */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 overflow-hidden">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-2 text-gray-800">
+              <InboxStackIcon className="w-5 h-5 text-blue-600"/>
+              <h2 className="font-semibold text-lg">Registered Fields</h2>
+            </div>
+            <button 
+              type="button" 
+              onClick={fetchFields}
+              disabled={loadingFields}
+              className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1 bg-blue-50 px-3 py-1.5 rounded-lg transition-colors"
+            >
+              {loadingFields ? (
+                <svg className="animate-spin h-3 w-3" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/></svg>
+              ) : (
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+              )}
+              Sync Fields
+            </button>
+          </div>
+
+          {loadingFields && fields.length === 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="h-32 bg-gray-50 rounded-xl border border-gray-100"></div>
+              ))}
+            </div>
+          ) : fields.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {fields.map((field) => (
+                <div key={field.id} className="group relative bg-gray-50/50 rounded-xl border border-gray-200 p-4 hover:border-blue-300 hover:bg-white transition-all shadow-sm hover:shadow-md cursor-pointer" 
+                  onClick={() => {
+                    setFormData(prev => ({
+                      ...prev,
+                      name: field.name || '',
+                      location: field.location || '',
+                      size_Square_Meter: field.size_Square_Meter?.toString() || '',
+                      N: field.N?.toString() || '',
+                      P: field.P?.toString() || '',
+                      K: field.K?.toString() || '',
+                      pH: field.pH?.toString() || '',
+                      temperature: field.temperature?.toString() || '',
+                      humidity: field.humidity?.toString() || '',
+                      rainfall: field.rainfall?.toString() || ''
+                    }));
+                    setPreviewUrl(field.imageURL || null);
+                    setProcessedData(null);
+                    setCurrentStep(1);
+                  }}
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="space-y-1">
+                      <h3 className="font-bold text-gray-900 group-hover:text-blue-600 transition-colors uppercase tracking-tight text-sm">{field.name}</h3>
+                      <div className="flex items-center gap-1 text-gray-500 text-[10px] font-medium uppercase tracking-wider">
+                        <MapIcon className="w-3 h-3"/>
+                        {field.location}
+                      </div>
+                    </div>
+                    <div className="bg-white px-2 py-1 rounded-md border border-gray-100 shadow-xs flex flex-col items-center">
+                      <span className="text-[10px] font-bold text-blue-600 leading-tight">{field.size_Square_Meter}</span>
+                      <span className="text-[8px] text-gray-400 uppercase leading-none font-bold">m²</span>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-4 grid grid-cols-4 gap-2 border-t border-gray-100 pt-3">
+                    <div className="text-center">
+                      <p className="text-[8px] text-gray-400 uppercase font-black tracking-widest">N</p>
+                      <p className="text-xs font-bold text-gray-700">{field.N || '-'}</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-[8px] text-gray-400 uppercase font-black tracking-widest">P</p>
+                      <p className="text-xs font-bold text-gray-700">{field.P || '-'}</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-[8px] text-gray-400 uppercase font-black tracking-widest">K</p>
+                      <p className="text-xs font-bold text-gray-700">{field.K || '-'}</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-[8px] text-gray-400 uppercase font-black tracking-widest">pH</p>
+                      <p className="text-xs font-bold text-gray-700">{field.pH || '-'}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="p-1 bg-blue-100 text-blue-600 rounded">
+                      <ArrowRightIcon className="w-3 h-3"/>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-10 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+               <MapIcon className="w-10 h-10 text-gray-300 mx-auto mb-3"/>
+               <p className="text-gray-500 font-medium">No registered fields found</p>
+               <p className="text-xs text-gray-400 mt-1">Add your first field below to start analyzing</p>
+            </div>
+          )}
         </div>
 
         <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -326,7 +466,7 @@ export default function YieldManagement() {
                       <input 
                         type="text" 
                         name="name" 
-                        value={formData.name} 
+                        value={formData.name || ""} 
                         onChange={handleChange} 
                         required 
                         className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all font-medium text-gray-900 placeholder:text-gray-400"
@@ -339,7 +479,7 @@ export default function YieldManagement() {
                       <input 
                         type="text" 
                         name="location" 
-                        value={formData.location} 
+                        value={formData.location || ""} 
                         onChange={handleChange} 
                         required 
                         className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all font-medium text-gray-900 placeholder:text-gray-400"
@@ -356,7 +496,7 @@ export default function YieldManagement() {
                         <input 
                           type="number" 
                           name="size_Square_Meter" 
-                          value={formData.size_Square_Meter} 
+                          value={formData.size_Square_Meter || ""} 
                           readOnly
                           className="w-full pl-4 pr-12 py-2 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none cursor-not-allowed font-medium text-gray-500"
                           placeholder="Auto-calculated"
@@ -442,6 +582,18 @@ export default function YieldManagement() {
                                 </div>
                               </div>
                             </>
+                          ) : previewUrl && !analyzing ? (
+                            <div className="flex flex-col items-center text-gray-400 gap-2 p-6 text-center">
+                              <div className="p-4 bg-green-100 rounded-full text-green-600 mb-2">
+                                <CheckCircleIcon className="w-10 h-10"/>
+                              </div>
+                              <span className="text-sm font-bold text-gray-700">Analysis Verified</span>
+                              <p className="text-xs text-gray-500 max-w-[200px]">This field has already been analyzed and is ready for planning tools.</p>
+                              <div className="mt-4 px-4 py-2 bg-white rounded-lg border border-gray-200 shadow-sm">
+                                <p className="text-[10px] text-gray-400 uppercase font-black tracking-widest">Saved Area</p>
+                                <p className="text-xl font-black text-green-600">{formData.size_Square_Meter} m²</p>
+                              </div>
+                            </div>
                           ) : (
                             <div className="flex flex-col items-center text-gray-400 gap-2">
                               {analyzing ? (
@@ -455,7 +607,7 @@ export default function YieldManagement() {
                                   <span className="text-sm text-red-500">Analysis Failed</span>
                                   <button 
                                     type="button" 
-                                    onClick={() => analyzeField(imageFile)}
+                                    onClick={() => imageFile && analyzeField(imageFile)}
                                     className="text-xs text-green-600 hover:underline mt-1"
                                   >
                                     Retry Analysis
@@ -823,7 +975,7 @@ export default function YieldManagement() {
                       <input 
                         type="number" 
                         name={item.name}
-                        value={formData[item.name]} 
+                        value={formData[item.name] || ""} 
                         onChange={handleChange} 
                         required 
                         step="0.01"

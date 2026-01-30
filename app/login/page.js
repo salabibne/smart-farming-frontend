@@ -31,7 +31,7 @@ export default function LoginPage() {
       const { accessToken, user, refreshToken } = response.data;
       
       // Save tokens and user info
-      localStorage.setItem('accessToken', accessToken);
+      localStorage.setItem('token', accessToken);
       localStorage.setItem('refreshToken', refreshToken);
       localStorage.setItem('user', JSON.stringify(user));
       
