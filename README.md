@@ -1,36 +1,19 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Smart Farming Project – Description
+Smart Farming projectSmart Farming is a software-based agricultural decision support system that uses Artificial Intelligence (AI) and Machine Learning (ML) to help farmers make data-driven farming decisions. The system analyzes historical and user-provided data such as soil properties, weather conditions, crop types, and fertilizer usage to improve productivity and sustainability.
 
-## Getting Started
+The platform focuses on crop recommendation, fertilizer suggestion, yield prediction, and weather-aware farming insights using trained machine learning models. Farmers interact with the system through a web-based dashboard, where they can input farm details and receive instant, actionable recommendations. To support logistics, integrated Invenotory and Finance module to ease their life .However, to see the realtime market price, integrated realtime market price module.
 
-First, run the development server:
+# Github Urls
+## Backend
+https://github.com/salabibne/Smart-Farming-Backend.git
+## Crop Disease 
+https://github.com/salabibne/smart_farming_crop_disease.git
+## Crop Recommendation
+https://github.com/salabibne/smart-farming-crop-recommendation.git
+## Seed Planning
+https://github.com/salabibne/smart-farming-seedPlanning.git
+## Fertilizer Recommendation
+https://github.com/salabibne/smart-farming-fertilizer-planning.git
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Market Price Management(Scrap Data From Chaldal)
+https://github.com/salabibne/Smart-Farming-Scraping.git

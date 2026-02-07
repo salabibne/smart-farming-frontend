@@ -7,12 +7,11 @@ export default function DashboardLayout({ children }) {
   const pathname = usePathname();
 
   const navItems = [
-    { name: "Dashboard", href: "/farmer" },
+    // { name: "Dashboard", href: "/farmer" },
     { name: "Yield Management", href: "/farmerPanel/yield-management" },
     { name: "Crops Health", href: "/farmerPanel/crop-health" },
     { name: "Weather Information", href: "/farmerPanel/weather-information" },
     { name: "Market Information", href: "/farmerPanel/market-information" },
-    { name: "Price Prediction", href: "/admin/price-prediction" },
     { name: "Manage Finance", href: "/farmerPanel/finance" },
     { name: "Manage Inventory", href: "/farmerPanel/manage-inventory" },
     { name: "Back to Home", href: "/" },
